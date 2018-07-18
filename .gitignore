@@ -1,0 +1,9 @@
+deprecated
+*.npy
+*.pyc
+__pycache__/
+
+# My configurations:
+data/
+.idea/
+*.txt
