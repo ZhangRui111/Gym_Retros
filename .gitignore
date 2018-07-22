@@ -2,8 +2,10 @@ deprecated
 *.npy
 *.pyc
 __pycache__/
+logs/
 
 # My configurations:
 data/
 .idea/
 *.txt
+test.py
