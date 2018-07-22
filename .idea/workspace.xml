@@ -2,22 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a741377b-9e7e-422d-933b-300b7eee4566" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/Brain/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Brain/double_dqn.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Brain/dqn_2013.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Brain/dqn_2015.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Brain/dueling_dqn.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Brain/pri_dqn.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Brain/sarsa.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Games/StarGunner_Atari2600/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Games/StarGunner_Atari2600/hyperparameters.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Games/StarGunner_Atari2600/network_pri_dqn.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Games/StarGunner_Atari2600/network_pri_dqn_rv.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Games/StarGunner_Atari2600/run_stargunner_atair2600.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Games/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utils/write_to_file.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Brain/pri_dqn.py" beforeDir="false" afterPath="$PROJECT_DIR$/Brain/pri_dqn.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Games/StarGunner_Atari2600/hyperparameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/Games/StarGunner_Atari2600/hyperparameters.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Games/StarGunner_Atari2600/run_stargunner_atair2600.py" beforeDir="false" afterPath="$PROJECT_DIR$/Games/StarGunner_Atari2600/run_stargunner_atair2600.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/write_to_file.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/write_to_file.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -28,23 +17,20 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="network_pri_dqn_rv.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Games/StarGunner_Atari2600/network_pri_dqn_rv.py">
+      <file leaf-file-name="pri_dqn.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Brain/pri_dqn.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-441">
-              <caret line="32" column="54" lean-forward="true" selection-start-line="32" selection-start-column="54" selection-end-line="32" selection-end-column="54" />
-              <folding>
-                <marker date="1532245874864" expanded="true" signature="1226:2683" ph="..." />
-              </folding>
+            <state relative-caret-position="300">
+              <caret line="172" column="54" selection-start-line="172" selection-start-column="35" selection-end-line="172" selection-end-column="54" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="pri_dqn.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Brain/pri_dqn.py">
+      <file leaf-file-name="hyperparameters.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Games/StarGunner_Atari2600/hyperparameters.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-419">
-              <caret line="191" column="17" selection-start-line="191" selection-start-column="17" selection-end-line="191" selection-end-column="17" />
+            <state relative-caret-position="44">
+              <caret line="2" column="19" lean-forward="true" selection-start-line="2" selection-start-column="19" selection-end-line="2" selection-end-column="19" />
             </state>
           </provider>
         </entry>
@@ -52,11 +38,20 @@
       <file leaf-file-name="run_stargunner_atair2600.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Games/StarGunner_Atari2600/run_stargunner_atair2600.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="329">
-              <caret line="168" lean-forward="true" selection-start-line="168" selection-end-line="168" />
+            <state relative-caret-position="704">
+              <caret line="161" column="55" selection-start-line="161" selection-start-column="55" selection-end-line="161" selection-end-column="55" />
               <folding>
                 <element signature="e#0#12#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="test.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/test.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="286">
+              <caret line="13" selection-start-line="13" selection-end-line="13" />
             </state>
           </provider>
         </entry>
@@ -82,10 +77,12 @@
         <option value="$PROJECT_DIR$/Brain/double_dqn.py" />
         <option value="$PROJECT_DIR$/Games/StarGunner_Atair2600/run_stargunner_atair2600.py" />
         <option value="$PROJECT_DIR$/Games/StarGunner_Atair2600/hyperparameters.py" />
-        <option value="$PROJECT_DIR$/test.py" />
         <option value="$PROJECT_DIR$/Games/StarGunner_Atari2600/network_pri_dqn.py" />
-        <option value="$PROJECT_DIR$/Brain/pri_dqn.py" />
         <option value="$PROJECT_DIR$/Games/StarGunner_Atari2600/network_pri_dqn_rv.py" />
+        <option value="$PROJECT_DIR$/utils/write_to_file.py" />
+        <option value="$PROJECT_DIR$/test.py" />
+        <option value="$PROJECT_DIR$/Brain/pri_dqn.py" />
+        <option value="$PROJECT_DIR$/Games/StarGunner_Atari2600/hyperparameters.py" />
         <option value="$PROJECT_DIR$/Games/StarGunner_Atari2600/run_stargunner_atair2600.py" />
       </list>
     </option>
@@ -125,13 +122,6 @@
               <item name="Gym_Retros" type="462c0819:PsiDirectoryNode" />
               <item name="Games" type="462c0819:PsiDirectoryNode" />
               <item name="StarGunner_Atari2600" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Gym_Retros" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Gym_Retros" type="462c0819:PsiDirectoryNode" />
-              <item name="Games" type="462c0819:PsiDirectoryNode" />
-              <item name="StarGunner_Atari2600" type="462c0819:PsiDirectoryNode" />
-              <item name="logs" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -255,12 +245,12 @@
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.34312695" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.41028333" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Python Console" order="7" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Terminal" order="7" weight="0.32948583" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.24449109" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.44281217" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -270,23 +260,70 @@
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Find" order="1" />
     </layout>
+    <layout-to-restore>
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.25" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Version Control" order="10" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.41028333" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.26128018" />
+      <window_info anchor="bottom" id="Terminal" order="8" weight="0.32948583" />
+      <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Python Console" order="7" />
+    </layout-to-restore>
   </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="11" />
+      <option name="time" value="18" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/Brain/pri_dqn.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4598">
+          <caret line="210" column="8" selection-start-line="210" selection-start-column="8" selection-end-line="210" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Games/StarGunner_Atari2600/hyperparameters.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="44">
+          <caret line="2" column="27" selection-start-line="2" selection-start-column="27" selection-end-line="2" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Games/StarGunner_Atari2600/run_stargunner_atair2600.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1298">
+          <caret line="60" column="33" lean-forward="true" selection-start-line="60" selection-start-column="33" selection-end-line="60" selection-end-column="33" />
+          <folding>
+            <element signature="e#0#12#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="286">
+          <caret line="13" selection-start-line="13" selection-end-line="13" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Games/StarGunner_Atari2600/network_pri_dqn_rv.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="396">
           <caret line="18" column="63" selection-start-line="18" selection-start-column="63" selection-end-line="18" selection-end-column="63" />
-          <folding>
-            <marker date="1532245874864" expanded="true" signature="1226:2683" ph="..." />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -357,13 +394,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="44">
-          <caret line="2" selection-start-line="2" selection-end-line="3" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/anaconda3/envs/openai/lib/python3.5/site-packages/tensorflow/python/summary/writer/writer.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="190">
@@ -371,41 +401,66 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Games/StarGunner_Atari2600/hyperparameters.py">
+    <entry file="file://$USER_HOME$/anaconda3/envs/openai/lib/python3.5/site-packages/tensorflow/python/client/session.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="44">
-          <caret line="2" column="22" selection-start-line="2" selection-start-column="22" selection-end-line="2" selection-end-column="22" />
+        <state relative-caret-position="225">
+          <caret line="1112" selection-start-line="1112" selection-end-line="1112" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Games/StarGunner_Atari2600/network_pri_dqn.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="858">
-          <caret line="39" lean-forward="true" selection-start-line="39" selection-end-line="39" />
+        <state relative-caret-position="22">
+          <caret line="28" column="48" selection-start-line="28" selection-start-column="45" selection-end-line="28" selection-end-column="48" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Games/StarGunner_Atari2600/network_pri_dqn_rv.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-441">
-          <caret line="32" column="54" lean-forward="true" selection-start-line="32" selection-start-column="54" selection-end-line="32" selection-end-column="54" />
-          <folding>
-            <marker date="1532245874864" expanded="true" signature="1226:2683" ph="..." />
-          </folding>
+        <state relative-caret-position="527">
+          <caret line="59" column="48" selection-start-line="59" selection-start-column="45" selection-end-line="59" selection-end-column="48" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/anaconda3/envs/openai/lib/python3.5/site-packages/retro/retro_env.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="214">
+          <caret line="153" column="40" lean-forward="true" selection-start-line="153" selection-start-column="40" selection-end-line="153" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="286">
+          <caret line="13" selection-start-line="13" selection-end-line="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils/write_to_file.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="391">
+          <caret line="19" column="50" lean-forward="true" selection-start-line="19" selection-start-column="50" selection-end-line="19" selection-end-column="50" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Brain/pri_dqn.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-419">
-          <caret line="191" column="17" selection-start-line="191" selection-start-column="17" selection-end-line="191" selection-end-column="17" />
+        <state relative-caret-position="300">
+          <caret line="172" column="54" selection-start-line="172" selection-start-column="35" selection-end-line="172" selection-end-column="54" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Games/StarGunner_Atari2600/hyperparameters.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="44">
+          <caret line="2" column="19" lean-forward="true" selection-start-line="2" selection-start-column="19" selection-end-line="2" selection-end-column="19" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Games/StarGunner_Atari2600/run_stargunner_atair2600.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="329">
-          <caret line="168" lean-forward="true" selection-start-line="168" selection-end-line="168" />
+        <state relative-caret-position="704">
+          <caret line="161" column="55" selection-start-line="161" selection-start-column="55" selection-end-line="161" selection-end-column="55" />
           <folding>
             <element signature="e#0#12#0" expanded="true" />
           </folding>

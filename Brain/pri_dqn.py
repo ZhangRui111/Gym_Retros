@@ -111,7 +111,12 @@ class Memory(object):  # stored as ( s, a, r, s_ ) in SumTree
             # About ISWeights's calculation,
             # https://morvanzhou.github.io/tutorials/machine-learning/reinforcement-learning/4-6-prioritized-replay/
             ISWeights[i, 0] = np.power(prob / min_prob, -self.beta)
-            b_idx[i], b_memory[i, :] = idx, data
+            b_idx[i] = idx
+            b_idx[i] = idx
+            a = b_memory[i, :]
+            data_ = np.asarray(data)
+            b_memory[i, :] = data_
+            b_memory[i, :] = data_
         return b_idx, b_memory, ISWeights
 
     def batch_update(self, tree_idx, abs_errors):
@@ -153,7 +158,7 @@ class DeepQNetwork:
             reward_decay=0.9,
             e_greedy=0.9,
             replace_target_iter=500,
-            memory_size=10000,
+            memory_size=5000,
             batch_size=32,
             e_greedy_increment=None,
             output_graph=False,
@@ -189,7 +194,7 @@ class DeepQNetwork:
         with tf.variable_scope('soft_replacement'):
             self.target_replace_op = [tf.assign(t, e) for t, e in zip(self.t_params, self.e_params)]
 
-        self.memory = Memory(capacity=memory_size, para=self.memory_paras)
+        self.memory = Memory(capacity=self.memory_size, para=self.memory_paras)
 
         self.sess = tf.Session()
         self.sess.run(tf.global_variables_initializer())
@@ -200,16 +205,19 @@ class DeepQNetwork:
         self.cost_his = []
 
     def store_transition(self, s, a, r, s_):
-        transition = np.hstack((s.flatten(), [a, r], s_.flatten()))
+        transition = np.hstack((s.flatten(), a, [r], s_.flatten()))
         self.memory.store(transition)  # have high priority for newly arrived transition
 
     def choose_action(self, observation, step):
         observation = observation[np.newaxis, :]
         if step >= self.replay_start and np.random.uniform() < self.epsilon:
             actions_value = self.sess.run(self.q_eval_net_out, feed_dict={self.eval_net_input: observation})
-            actions_value[actions_value > 0.5] = 1
-            actions_value[actions_value <= 0.5] = 0
-            action = actions_value
+            for i in range(actions_value.size):
+                if actions_value[0][i] < 0.5:
+                    actions_value[0][i] = 0
+                else:
+                    actions_value[0][i] = 1
+            action = actions_value[0]
         else:
             action = np.random.randint(2, size=8)
         return action

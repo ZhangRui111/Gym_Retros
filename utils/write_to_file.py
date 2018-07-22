@@ -21,6 +21,6 @@ def write_to_file_running_steps(filename, content):
         except OSError as exc:  # Guard against race condition
             if exc.errno != errno.EEXIST:
                 raise
-    fo = open(filename, "w")
+    fo = open(filename, "a")
     fo.write(content)
     fo.close()

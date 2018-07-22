@@ -58,7 +58,7 @@ def run_stargunner(env, RL, model, saver, load_step):
         while True:
             env.render()
             # RL choose action based on observation
-            action = RL.choose_action(observation, total_steps)
+            action = RL.choose_action(observation.flatten(), total_steps)
             # RL take action and get next observation and reward
             observation_, reward, done, info = env.step(action)
 
@@ -114,7 +114,7 @@ def main(model):
         # get the DeepQNetwork Agent
         RL = DeepQNetwork(
             n_actions=sum([4, 4]),
-            n_features=2,
+            n_features=n_features,
             eval_net_input=inputs[0],
             target_net_input=inputs[1],
             q_target=inputs[2],
@@ -128,6 +128,7 @@ def main(model):
             t_params=weights[1],
             memory_paras=m_paras,
             replay_start_size=Hp.REPLY_START_SIZE,
+            replace_target_iter=Hp.TARGET_REPLACE_ITER,
             e_greedy_increment=0.00005,
             output_graph=True,
         )
@@ -144,7 +145,7 @@ def main(model):
         # get the DeepQNetwork Agent
         RL = DeepQNetwork(
             n_actions=[4, 4],
-            n_features=2,
+            n_features=n_features,
             eval_net_input=inputs[0],
             target_net_input=inputs[1],
             q_target=inputs[2],
@@ -158,6 +159,7 @@ def main(model):
             t_params=weights[1],
             memory_paras=m_paras,
             replay_start_size=Hp.REPLY_START_SIZE,
+            replace_target_iter=Hp.TARGET_REPLACE_ITER,
             e_greedy_increment=0.00005,
             output_graph=True,
         )
