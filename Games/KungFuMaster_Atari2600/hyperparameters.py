@@ -1,6 +1,6 @@
 class Hyperparameters(object):
     MAX_EPISODES = 100
-    REPLY_START_SIZE = 4000
+    REPLY_START_SIZE = 100000000
     UPDATE_FREQUENCY = 2
     LEARNING_RATE = 0.001
     REWARD_DECAY = 0.9
