@@ -9,7 +9,7 @@ mlp.use('TkAgg')
 import matplotlib.pyplot as plt
 import numpy as np
 
-from Games.StarGunner_Atari2600.hyperparameters import Hyperparameters
+from Games.KungFuMaster_Atari2600.hyperparameters import Hyperparameters
 from Utils.write_to_file import write_to_file_running_time
 from Utils.write_to_file import write_to_file_running_steps
 
@@ -97,14 +97,14 @@ def run_stargunner(env, RL, model, saver, load_step):
 
 
 def main(model):
-    env = retro.make(game='StarGunner-Atari2600')
+    env = retro.make(game='KungFuMaster-Atari2600')
     # env.unwrapped can give us more information.
     env = env.unwrapped
 
     if model == 'pri_dqn':
         from Brain.pri_dqn import DeepQNetwork
         from Brain.pri_dqn import MemoryParas
-        from Games.StarGunner_Atari2600.network_pri_dqn import build_network
+        from Games.KungFuMaster_Atari2600.network_pri_dqn import build_network
         m_paras = MemoryParas(Hp.M_EPSILON, Hp.M_ALPHA, Hp.M_BETA, Hp.M_BETA_INCRE, Hp.M_ABS_ERROR_UPPER)
         # build network
         # build network.
@@ -127,15 +127,20 @@ def main(model):
             e_params=weights[0],
             t_params=weights[1],
             memory_paras=m_paras,
-            replay_start_size=Hp.REPLY_START_SIZE,
             replace_target_iter=Hp.TARGET_REPLACE_ITER,
+            learning_rate=Hp.LEARNING_RATE,
+            reward_decay=Hp.REWARD_DECAY,
+            e_greedy=Hp.E_GREEDY,
+            replay_start_size=Hp.REPLY_START_SIZE,
+            memory_size=Hp.MEMORY_SIZE,
+            batch_size=Hp.BATCH_SIZE,
             e_greedy_increment=0.00005,
             output_graph=True,
         )
     else:  # pri_dqn_rv
         from Brain.pri_dqn import DeepQNetwork
         from Brain.pri_dqn import MemoryParas
-        from Games.StarGunner_Atari2600.network_pri_dqn_rv import build_network
+        from Games.KungFuMaster_Atari2600.network_pri_dqn_rv import build_network
         # build network.
         n_actions = [4, 4]
         n_features = env.observation_space.high.size
@@ -158,8 +163,13 @@ def main(model):
             e_params=weights[0],
             t_params=weights[1],
             memory_paras=m_paras,
-            replay_start_size=Hp.REPLY_START_SIZE,
             replace_target_iter=Hp.TARGET_REPLACE_ITER,
+            learning_rate=Hp.LEARNING_RATE,
+            reward_decay=Hp.REWARD_DECAY,
+            e_greedy=Hp.E_GREEDY,
+            replay_start_size=Hp.REPLY_START_SIZE,
+            memory_size=Hp.MEMORY_SIZE,
+            batch_size=Hp.BATCH_SIZE,
             e_greedy_increment=0.00005,
             output_graph=True,
         )
@@ -185,6 +195,5 @@ if __name__ == '__main__':
     # # change different models here:
     # pri_dqn, double_dqn...
     result1 = main(model='pri_dqn')
-    result2 = main(model='pri_dqn_rv')
 
-    plot_results(result1, result2)
+
