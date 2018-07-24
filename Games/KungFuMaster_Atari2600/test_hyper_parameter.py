@@ -3,7 +3,6 @@ import os
 import numpy as np
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Set log level: only output error.
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"  # Only use #0 GPU.
-import tensorflow as tf
 import matplotlib as mlp
 mlp.use('TkAgg')
 
@@ -41,17 +40,17 @@ def run_stargunner(env, RL, update=2):
                 if total_steps > Hp.REPLY_START_SIZE:
                     if total_steps % update == 0:
                         RL.learn()
-
-                    # if total_steps % Hp.WEIGHTS_SAVER_ITER == 0:
-                    #     saver.save(RL.sess, Hp.SAVED_NETWORK_PATH + model + '/' + '-' + model + '-' +
-                    #                str(total_steps + load_step))
+            #
+            #         if total_steps % Hp.WEIGHTS_SAVER_ITER == 0:
+            #             saver.save(RL.sess, Hp.SAVED_NETWORK_PATH + model + '/' + '-' + model + '-' +
+            #                        str(total_steps + load_step))
 
             observation = observation_
             episode_steps += 1
             total_steps += 1
 
             if done:
-                print('episode ', i_episode, ' finished')
+                print('episode ', i_episode, ' finished' + ' | ' + str(rewards))
                 steps_episode.append(episode_steps)
                 steps_total.append(total_steps)
                 rewards_episode.append(rewards)

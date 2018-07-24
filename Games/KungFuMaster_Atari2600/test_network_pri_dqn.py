@@ -26,11 +26,11 @@ def build_network(n_features, n_actions, lr, rand):
 
     # ------------------ build evaluate_net ------------------
     with tf.variable_scope('eval_net'+str(rand)):
-        f1 = tf.layers.dense(eval_net_input, 128, tf.nn.relu, kernel_initializer=w_initializer,
+        f1 = tf.layers.dense(eval_net_input, 64, tf.nn.relu, kernel_initializer=w_initializer,
                              bias_initializer=b_initializer, name='f1'+str(rand))
-        f2 = tf.layers.dense(f1, 128, tf.nn.relu, kernel_initializer=w_initializer,
+        f2 = tf.layers.dense(f1, 64, tf.nn.relu, kernel_initializer=w_initializer,
                              bias_initializer=b_initializer, name='f2'+str(rand))
-        e1 = tf.layers.dense(f2, 64, tf.nn.relu, kernel_initializer=w_initializer,
+        e1 = tf.layers.dense(f2, 16, tf.nn.relu, kernel_initializer=w_initializer,
                              bias_initializer=b_initializer, name='e1'+str(rand))
         eval_V = tf.layers.dense(e1, 1, None, kernel_initializer=w_initializer,
                                  bias_initializer=b_initializer, name='eval_V'+str(rand))
@@ -47,11 +47,11 @@ def build_network(n_features, n_actions, lr, rand):
 
     # ------------------ build target_net ------------------
     with tf.variable_scope('target_net'+str(rand)):
-        f1 = tf.layers.dense(eval_net_input, 128, tf.nn.relu, kernel_initializer=w_initializer,
+        f1 = tf.layers.dense(eval_net_input, 64, tf.nn.relu, kernel_initializer=w_initializer,
                              bias_initializer=b_initializer, name='f1'+str(rand))
-        f2 = tf.layers.dense(f1, 128, tf.nn.relu, kernel_initializer=w_initializer,
+        f2 = tf.layers.dense(f1, 64, tf.nn.relu, kernel_initializer=w_initializer,
                              bias_initializer=b_initializer, name='f2'+str(rand))
-        t1 = tf.layers.dense(f2, 64, tf.nn.relu, kernel_initializer=w_initializer,
+        t1 = tf.layers.dense(f2, 16, tf.nn.relu, kernel_initializer=w_initializer,
                              bias_initializer=b_initializer, name='t1'+str(rand))
         target_V = tf.layers.dense(t1, 1, None, kernel_initializer=w_initializer,
                                    bias_initializer=b_initializer, name='target_V'+str(rand))
