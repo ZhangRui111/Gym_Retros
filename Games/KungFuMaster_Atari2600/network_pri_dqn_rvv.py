@@ -32,7 +32,9 @@ def build_network(n_features, n_actions, lr):
                               bias_initializer=b_initializer, name='ef2')
         q_eval_net_out1 = tf.layers.dense(ef2, n_actions[0], kernel_initializer=w_initializer,
                                           bias_initializer=b_initializer, name='q_eval_1')
-        eu1 = tf.concat([ef2, q_eval_net_out1], 1)
+        eu0 = tf.stack([q_eval_net_out1] * 32)
+        eu0 = tf.reshape(eu0, [-1, 128])
+        eu1 = tf.concat([ef2, eu0], 1)
         q_eval_net_out2 = tf.layers.dense(eu1, n_actions[1], kernel_initializer=w_initializer,
                                           bias_initializer=b_initializer, name='q_eval_2')
         q_eval_net_out = tf.concat([q_eval_net_out1, q_eval_net_out2], 1)
@@ -69,7 +71,9 @@ def build_network(n_features, n_actions, lr):
                               bias_initializer=b_initializer, name='tf2')
         q_target_net_out1 = tf.layers.dense(tf2, n_actions[0], kernel_initializer=w_initializer,
                                             bias_initializer=b_initializer, name='q_target_1')
-        tu1 = tf.concat([tf2, q_target_net_out1], 1)
+        tu0 = tf.stack([q_target_net_out1]*32)
+        tu0 = tf.reshape(tu0, [-1, 128])
+        tu1 = tf.concat([tf2, tu0], 1)
         q_target_net_out2 = tf.layers.dense(tu1, n_actions[1], kernel_initializer=w_initializer,
                                             bias_initializer=b_initializer, name='q_target_2')
         q_target_net_out = tf.concat([q_target_net_out1, q_target_net_out2], 1)

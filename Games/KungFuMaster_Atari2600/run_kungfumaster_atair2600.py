@@ -74,19 +74,19 @@ def run_stargunner(env, RL, model, saver, load_step):
                     if total_steps % Hp.WEIGHTS_SAVER_ITER == 0:
                         saver.save(RL.sess, Hp.SAVED_NETWORK_PATH + model + '/' + '-' + model + '-' +
                                    str(total_steps + load_step))
-                        print('-----save weights-----')
+                        # print('-----save weights-----')
 
                     if total_steps % Hp.OUTPUT_SAVER_ITER == 0:
                         filename1 = Hp.LOGS_DATA_PATH + model + '/rewards_total.txt'
                         write_to_file_running_steps(filename1, str(np.vstack((episodes, rewards_episode))))
-                        print('-----save outputs-----')
+                        # print('-----save outputs-----')
 
             observation = observation_
             episode_steps += 1
             total_steps += 1
 
             if done:
-                print('episode ', i_episode, ' finished')
+                print('episode ' +  str(i_episode) + ' | ' + str(rewards))
                 steps_episode.append(episode_steps)
                 steps_total.append(total_steps)
                 rewards_episode.append(rewards)
@@ -110,7 +110,7 @@ def main(model):
         # build network.
         n_actions = env.action_space.n
         n_features = env.observation_space.high.size
-        inputs, outputs, weights = build_network(n_features, n_actions, lr=0.01)
+        inputs, outputs, weights = build_network(n_features, n_actions, lr=Hp.LEARNING_RATE)
         # get the DeepQNetwork Agent
         RL = DeepQNetwork(
             n_actions=sum([4, 4]),
@@ -146,7 +146,7 @@ def main(model):
         n_features = env.observation_space.high.size
         m_paras = MemoryParas(Hp.M_EPSILON, Hp.M_ALPHA, Hp.M_BETA, Hp.M_BETA_INCRE, Hp.M_ABS_ERROR_UPPER)
         # build network
-        inputs, outputs, weights = build_network(n_features, n_actions, lr=0.01)
+        inputs, outputs, weights = build_network(n_features, n_actions, lr=Hp.LEARNING_RATE)
         # get the DeepQNetwork Agent
         RL = DeepQNetwork(
             n_actions=[4, 4],
@@ -194,6 +194,11 @@ if __name__ == '__main__':
     Hp = Hyperparameters()
     # # change different models here:
     # pri_dqn, double_dqn...
-    result1 = main(model='pri_dqn')
-
-
+    # result1 = main(model='pri_dqn')
+    result2 = main(model='pri_dqn_rv')
+    # filename1 = Hp.LOGS_DATA_PATH + 'pri_dqn' + '/rewards_total.txt'
+    # write_to_file_running_steps(filename1, str(result1))
+    filename2 = Hp.LOGS_DATA_PATH + 'pri_dqn_rv' + '/rewards_total.txt'
+    write_to_file_running_steps(filename2, str(result2))
+    #
+    # plot_results(result1, result2)
