@@ -10,8 +10,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from Games.KungFuMaster_Atari2600.hyperparameters import Hyperparameters
-from Utils.write_to_file import write_to_file_running_time
-from Utils.write_to_file import write_to_file_running_steps
+from Utils.write_to_file import write_to_file_w
+from Utils.write_to_file import write_to_file_a
 
 
 def plot_results(his_natural, his_prio):
@@ -78,7 +78,7 @@ def run_stargunner(env, RL, model, saver, load_step):
 
                     if total_steps % Hp.OUTPUT_SAVER_ITER == 0:
                         filename1 = Hp.LOGS_DATA_PATH + model + '/rewards_total.txt'
-                        write_to_file_running_steps(filename1, str(np.vstack((episodes, rewards_episode))))
+                        write_to_file_a(filename1, str(np.vstack((episodes, rewards_episode))))
                         # print('-----save outputs-----')
 
             observation = observation_
@@ -185,7 +185,7 @@ def main(model):
     running_time = (end_time - start_time) / 60
 
     filename = Hp.LOGS_DATA_PATH + model + "/running_time.txt"
-    write_to_file_running_time(filename, str(running_time))
+    write_to_file_w(filename, str(running_time))
 
     return results
 
@@ -199,6 +199,6 @@ if __name__ == '__main__':
     # filename1 = Hp.LOGS_DATA_PATH + 'pri_dqn' + '/rewards_total.txt'
     # write_to_file_running_steps(filename1, str(result1))
     filename2 = Hp.LOGS_DATA_PATH + 'pri_dqn_rv' + '/rewards_total.txt'
-    write_to_file_running_steps(filename2, str(result2))
+    write_to_file_a(filename2, str(result2))
     #
     # plot_results(result1, result2)

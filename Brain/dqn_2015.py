@@ -1,61 +1,47 @@
 import numpy as np
+import random
 import tensorflow as tf
+from collections import deque
+
+from Hyper_parameters.hp_dqn_2015 import Hyperparameters
 
 
 class DeepQNetwork:
     def __init__(
             self,
-            n_actions,
-            n_features,
-            eval_net_input,
-            target_net_input,
-            q_target,
-            q_eval_net_out,
-            loss,
-            train_op,
-            q_target_net_out,
-            e_params,
-            t_params,
-            replay_start_size=1000,
-            learning_rate=0.01,
-            reward_decay=0.9,
-            e_greedy=0.9,
-            replace_target_iter=300,
-            memory_size=500,
-            batch_size=32,
-            e_greedy_increment=None,
-            output_graph=False,
+            network_build
     ):
-        self.n_actions = n_actions
-        self.n_features = n_features
-        self.replay_start = replay_start_size
-        self.lr = learning_rate
-        self.gamma = reward_decay
-        self.epsilon_max = e_greedy
-        self.replace_target_iter = replace_target_iter
-        self.memory_size = memory_size
-        self.batch_size = batch_size
-        self.epsilon_increment = e_greedy_increment
-        self.epsilon = 0 if e_greedy_increment is not None else self.epsilon_max
+        self.hp = Hyperparameters()
+        self.n_actions = self.hp.N_ACTIONS
+        self.n_features = self.hp.N_FEATURES
+        self.replay_start = self.hp.REPLY_START_SIZE
+        self.lr = self.hp.LEARNING_RATE
+        self.gamma = self.hp.DISCOUNT_FACTOR
+        self.epsilon_max = self.hp.FINAL_EXPLOR
+        self.replace_target_iter = self.hp.TARGET_NETWORK_UPDATE_FREQUENCY
+        self.memory_size = self.hp.REPLY_MEMORY_SIZE
+        self.batch_size = self.hp.MINIBATCH_SIZE
+        self.epsilon_increment = (self.hp.FINAL_EXPLOR-self.hp.INITIAL_EXPLOR) / self.hp.FINAL_EXPLOR_FRAME
+        self.epsilon = self.hp.INITIAL_EXPLOR
         self.flag = True  # output signal
-        self.summary_flag = output_graph  # tf.summary flag
+        self.summary_flag = self.hp.OUTPUT_GRAPH  # tf.summary flag
 
         # network input/output
-        self.eval_net_input = eval_net_input
-        self.target_net_input = target_net_input
-        self.q_target = q_target
-        self.q_eval_net_out = q_eval_net_out
-        self.loss = loss
-        self.train_op = train_op
-        self.q_target_net_out = q_target_net_out
-        self.e_params = e_params
-        self.t_params = t_params
+        self.eval_net_input = network_build[0][0]
+        self.target_net_input = network_build[0][1]
+        self.q_target = network_build[0][2]
+        self.q_eval_net_out = network_build[1][0]
+        self.loss = network_build[1][1]
+        self.train_op = network_build[1][2]
+        self.q_target_net_out = network_build[1][3]
+        self.e_params = network_build[2][0]
+        self.t_params = network_build[2][1]
 
         # total learning step
         self.learn_step_counter = 0
 
         # initialize zero memory [s, a, r, s_]
-        self.memory = np.zeros((self.memory_size, n_features * 2 + 2))
+        self.memory = deque()
 
         # consist of [target_net, evaluate_net]
         # build_network()
@@ -72,16 +58,7 @@ class DeepQNetwork:
         self.sess.run(tf.global_variables_initializer())
         self.cost_his = []
 
-    def store_transition(self, s, a, r, s_):
-        if not hasattr(self, 'memory_counter'):
-            self.memory_counter = 0
-        transition = np.hstack((s.flatten(), [a, r], s_.flatten()))
-        # replace the old memory with new memory
-        index = self.memory_counter % self.memory_size
-        self.memory[index, :] = transition
-        self.memory_counter += 1
-
-    def choose_action(self, observation, step):
+    def choose_action(self, observation):
         """ Choose action following epsilon-greedy policy.
 
         :param observation:
@@ -89,13 +66,17 @@ class DeepQNetwork:
         :return:
         """
         # at the very beginning, only take actions randomly.
-        if step >= self.replay_start and np.random.uniform() < self.epsilon:
+        if np.random.uniform() < self.epsilon:
             # forward feed the observation and get q value for every actions
-            actions_value = self.sess.run(self.q_eval_net_out,
-                                          feed_dict={self.eval_net_input: observation.reshape([1, self.n_features])})
-            action = np.argmax(actions_value)
+            actions_value = self.sess.run(self.q_eval_net_out, feed_dict={self.eval_net_input: observation})
+            for i in range(actions_value.size):
+                if actions_value[0][i] < 0.5:
+                    actions_value[0][i] = 0
+                else:
+                    actions_value[0][i] = 1
+            action = actions_value[0]
         else:
-            action = np.random.randint(0, self.n_actions)
+            action = np.random.randint(2, size=8)
         return action
 
     def choose_action_greedy(self, observation):
@@ -104,9 +85,13 @@ class DeepQNetwork:
         :param observation:
         :return:
         """
-        actions_value = self.sess.run(self.q_eval_net_out,
-                                      feed_dict={self.eval_net_input: observation.reshape([1, self.n_features])})
-        action = np.argmax(actions_value)
+        actions_value = self.sess.run(self.q_eval_net_out, feed_dict={self.eval_net_input: observation})
+        for i in range(actions_value.size):
+            if actions_value[0][i] < 0.5:
+                actions_value[0][i] = 0
+            else:
+                actions_value[0][i] = 1
+        action = actions_value[0]
         return action
 
     def learn(self):
@@ -116,32 +101,42 @@ class DeepQNetwork:
             print('\ntarget_params_replaced\n')
 
         # sample batch memory from all memory
-        if self.memory_counter > self.memory_size:
-            sample_index = np.random.choice(self.memory_size, size=self.batch_size)
-        else:
-            sample_index = np.random.choice(self.memory_counter, size=self.batch_size)
-        batch_memory = self.memory[sample_index, :]
+        batch_memory = random.sample(self.memory, self.batch_size)
+        length = self.hp.IMAGE_LENGTH*self.hp.IMAGE_LENGTH*self.hp.AGENT_HISTORY_LENGTH
+        batch_memory_arr = np.zeros((self.batch_size, length*2+1+self.n_actions))
+        i = 0
+        for d in batch_memory:
+            batch_memory_arr[i, :] = d
+            i += 1
+
+        s_batch = batch_memory_arr[:, :length]
+        eval_act_index_batch = batch_memory_arr[:, length:length+self.n_actions]
+        reward_batch = batch_memory_arr[:, length+self.n_actions].astype(int)
+        s_next_batch = batch_memory_arr[:, -length:]
+
+        s_batch_input = np.reshape(s_batch, (self.hp.MINIBATCH_SIZE, self.hp.IMAGE_LENGTH,
+                                             self.hp.IMAGE_LENGTH, self.hp.AGENT_HISTORY_LENGTH))
+        s_next_batch_input = np.reshape(s_next_batch, (self.hp.MINIBATCH_SIZE, self.hp.IMAGE_LENGTH,
+                                                       self.hp.IMAGE_LENGTH, self.hp.AGENT_HISTORY_LENGTH))
 
         # input is all next observation
         q_target_out = self.sess.run(self.q_target_net_out,
-                                     feed_dict={self.target_net_input: batch_memory[:, -self.n_features:]})
+                                     feed_dict={self.target_net_input: s_next_batch_input})
+
         # real q_eval, input is the current observation
         q_eval = self.sess.run(self.q_eval_net_out,
-                               {self.eval_net_input: batch_memory[:, :self.n_features]})
+                               {self.eval_net_input: s_batch_input})
         if self.summary_flag:
             tf.summary.histogram("q_eval", q_eval)
 
         q_target = q_eval.copy()
-
-        eval_act_index = batch_memory[:, self.n_features].astype(int)
-        reward = batch_memory[:, self.n_features + 1]
 
         batch_index = np.arange(self.batch_size, dtype=np.int32)
 
         selected_q_next = np.max(q_target_out, axis=1)
 
         # real q_target, in other words, ``y_i'' in algorithm.
-        q_target[batch_index, eval_act_index] = reward + self.gamma * selected_q_next
+        q_target[batch_index, eval_act_index_batch] = reward_batch + self.gamma * selected_q_next
         if self.summary_flag:
             tf.summary.histogram("q_target", q_target)
 
@@ -150,6 +145,11 @@ class DeepQNetwork:
                                                 self.q_target: q_target})
 
         self.cost_his.append(self.cost)
+
+        # epsilon-decay
+        self.epsilon = self.epsilon + self.epsilon_increment if self.epsilon < self.epsilon_max else self.epsilon_max
+        self.learn_step_counter += 1
+
         if self.summary_flag:
             tf.summary.scalar("cost", self.cost)
 
@@ -162,6 +162,3 @@ class DeepQNetwork:
             merge_all = self.sess.run(self.merge_op, feed_dict={self.eval_net_input: batch_memory[:, :self.n_features],
                                                                 self.q_target: q_target})
             self.writer.add_summary(merge_all, self.learn_step_counter)
-        # epsilon-decay
-        self.epsilon = self.epsilon + self.epsilon_increment if self.epsilon < self.epsilon_max else self.epsilon_max
-        self.learn_step_counter += 1
