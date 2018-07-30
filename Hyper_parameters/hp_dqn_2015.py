@@ -19,7 +19,7 @@ class Hyperparameters(object):
         self.INITIAL_EXPLOR = 0
         self.FINAL_EXPLOR = 0.9
         self.FINAL_EXPLOR_FRAME = 1000000
-        self.REPLY_START_SIZE = 500  # 50000
+        self.REPLY_START_SIZE = 50000  # 50000
 
         self.MAX_EPISODES = 100000
         self.WEIGHTS_SAVER_ITER = 20000

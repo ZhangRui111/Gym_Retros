@@ -62,7 +62,7 @@ def run_stargunner(env, RL, model, saver, load_step):
         action = RL.choose_action(obser_cv_stack)
 
         while True:
-            # env.render()
+            env.render()
             if total_steps % hp.AGENT_HISTORY_LENGTH == 0:
                 # RL choose action based on observation
                 action = RL.choose_action(preprocessing_stack(observation))

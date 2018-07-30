@@ -65,7 +65,7 @@ def build_network(rand):
     # ------------------ build target_net --------------------
     with tf.variable_scope('target_net'):
         # [None, 96, 96, 4] --> [None, 48, 48, 32]
-        target_conv1 = tf.layers.conv2d(eval_net_input, kernel_size=3, activation=tf.nn.relu,
+        target_conv1 = tf.layers.conv2d(target_net_input, kernel_size=3, activation=tf.nn.relu,
                                         kernel_initializer=tf.random_normal_initializer(0., 0.01),
                                         filters=32, strides=1, padding='SAME', name='target_c1_' + str(rand))
         target_pool1 = tf.layers.max_pooling2d(target_conv1, pool_size=2, strides=2, padding='VALID',

@@ -110,7 +110,7 @@ class DeepQNetwork:
             i += 1
 
         s_batch = batch_memory_arr[:, :length]
-        eval_act_index_batch = batch_memory_arr[:, length:length+self.n_actions]
+        eval_act_index_batch = batch_memory_arr[:, length:length+self.n_actions].astype(int)
         reward_batch = batch_memory_arr[:, length+self.n_actions].astype(int)
         s_next_batch = batch_memory_arr[:, -length:]
 
@@ -129,19 +129,13 @@ class DeepQNetwork:
         if self.summary_flag:
             tf.summary.histogram("q_eval", q_eval)
 
-        q_target = q_eval.copy()
+        q_target = np.expand_dims(reward_batch, 1) + self.gamma * q_target_out
 
-        batch_index = np.arange(self.batch_size, dtype=np.int32)
-
-        selected_q_next = np.max(q_target_out, axis=1)
-
-        # real q_target, in other words, ``y_i'' in algorithm.
-        q_target[batch_index, eval_act_index_batch] = reward_batch + self.gamma * selected_q_next
         if self.summary_flag:
             tf.summary.histogram("q_target", q_target)
 
         _, self.cost = self.sess.run([self.train_op, self.loss],
-                                     feed_dict={self.eval_net_input: batch_memory[:, :self.n_features],
+                                     feed_dict={self.eval_net_input: s_batch_input,
                                                 self.q_target: q_target})
 
         self.cost_his.append(self.cost)
@@ -159,6 +153,6 @@ class DeepQNetwork:
                 self.merge_op = tf.summary.merge_all()
                 self.flag = False
         if self.summary_flag:
-            merge_all = self.sess.run(self.merge_op, feed_dict={self.eval_net_input: batch_memory[:, :self.n_features],
+            merge_all = self.sess.run(self.merge_op, feed_dict={self.eval_net_input: s_batch_input,
                                                                 self.q_target: q_target})
             self.writer.add_summary(merge_all, self.learn_step_counter)
