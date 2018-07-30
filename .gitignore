@@ -3,9 +3,10 @@ deprecated
 *.pyc
 __pycache__/
 logs/
+back/
 
 # My configurations:
 data/
 .idea/
 *.txt
-test.py
+test*.py

@@ -9,7 +9,7 @@ mlp.use('TkAgg')
 import matplotlib.pyplot as plt
 import numpy as np
 
-from Games.StarGunner_Atari2600.hyperparameters import Hyperparameters
+from Hyper_parameters.hyperparameters import Hyperparameters
 from Utils.write_to_file import write_to_file_running_time
 from Utils.write_to_file import write_to_file_running_steps
 
@@ -135,7 +135,7 @@ def main(model):
     else:  # pri_dqn_rv
         from Brain.pri_dqn import DeepQNetwork
         from Brain.pri_dqn import MemoryParas
-        from Games.StarGunner_Atari2600.network_pri_dqn_rv import build_network
+        from back.network_pri_dqn_rv import build_network
         # build network.
         n_actions = [4, 4]
         n_features = env.observation_space.high.size
