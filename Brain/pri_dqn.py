@@ -4,6 +4,8 @@ This is not real pri_dqn as this algorithm only output Q value for one set of ac
 import numpy as np
 import tensorflow as tf
 
+from Hyper_parameters.hp_pri_dqn import Hyperparameters
+
 np.random.seed(1)
 tf.set_random_seed(1)
 
@@ -113,10 +115,7 @@ class Memory(object):  # stored as ( s, a, r, s_ ) in SumTree
             # https://morvanzhou.github.io/tutorials/machine-learning/reinforcement-learning/4-6-prioritized-replay/
             ISWeights[i, 0] = np.power(prob / min_prob, -self.beta)
             b_idx[i] = idx
-            b_idx[i] = idx
-            a = b_memory[i, :]
             data_ = np.asarray(data)
-            b_memory[i, :] = data_
             b_memory[i, :] = data_
         return b_idx, b_memory, ISWeights
 
@@ -138,81 +137,66 @@ class MemoryParas(object):
 
 
 class DeepQNetwork:
-    def __init__(
-            self,
-            n_actions,
-            n_features,
-            eval_net_input,
-            target_net_input,
-            q_target,
-            ISWeights,
-            q_eval_net_out,
-            loss,
-            train_op,
-            q_target_net_out,
-            abs_errors,
-            e_params,
-            t_params,
-            memory_paras,
-            replay_start_size=1000,
-            learning_rate=0.005,
-            reward_decay=0.9,
-            e_greedy=0.9,
-            replace_target_iter=500,
-            memory_size=1000,
-            batch_size=32,
-            e_greedy_increment=None,
-            output_graph=False,
-    ):
-        self.n_actions = n_actions
-        self.n_features = n_features
-        self.memory_paras = memory_paras
-        self.replay_start = replay_start_size
-        self.lr = learning_rate
-        self.gamma = reward_decay
-        self.epsilon_max = e_greedy
-        self.replace_target_iter = replace_target_iter
-        self.memory_size = memory_size
-        self.batch_size = batch_size
-        self.epsilon_increment = e_greedy_increment
-        self.epsilon = 0 if e_greedy_increment is not None else self.epsilon_max
+    def __init__(self, network_build):
+        self.hp = Hyperparameters()
+        self.n_actions = self.hp.N_ACTIONS
+        self.n_features = self.hp.N_FEATURES
+        self.replay_start = self.hp.REPLY_START_SIZE
+        self.lr = self.hp.LEARNING_RATE
+        self.gamma = self.hp.DISCOUNT_FACTOR
+        self.epsilon_max = self.hp.FINAL_EXPLOR
+        self.replace_target_iter = self.hp.TARGET_NETWORK_UPDATE_FREQUENCY
+        self.memory_size = self.hp.REPLY_MEMORY_SIZE
+        self.batch_size = self.hp.MINIBATCH_SIZE
+        self.epsilon_increment = (self.hp.FINAL_EXPLOR - self.hp.INITIAL_EXPLOR) / self.hp.FINAL_EXPLOR_FRAME
+        self.epsilon = self.hp.INITIAL_EXPLOR
+        self.flag = True  # output signal
+        self.summary_flag = self.hp.OUTPUT_GRAPH  # tf.summary flag
 
         # network input/output
-        self.eval_net_input = eval_net_input
-        self.target_net_input = target_net_input
-        self.q_target = q_target
-        self.ISWeights = ISWeights
-        self.q_eval_net_out = q_eval_net_out
-        self.loss = loss
-        self.train_op = train_op
-        self.q_target_net_out = q_target_net_out
-        self.abs_errors = abs_errors
-        self.e_params = e_params
-        self.t_params = t_params
+        self.eval_net_input = network_build[0][0]
+        self.target_net_input = network_build[0][1]
+        self.q_target = network_build[0][2]
+        self.ISWeights = network_build[0][3]
+        self.q_eval_net_out = network_build[1][0]
+        self.loss = network_build[1][1]
+        self.train_op = network_build[1][2]
+        self.q_target_net_out = network_build[1][3]
+        self.abs_errors = network_build[1][4]
+        self.e_params = network_build[2][0]
+        self.t_params = network_build[2][1]
 
         self.learn_step_counter = 0
 
         with tf.variable_scope('soft_replacement'):
             self.target_replace_op = [tf.assign(t, e) for t, e in zip(self.t_params, self.e_params)]
 
+        self.memory_paras = MemoryParas(self.hp.M_EPSILON, self.hp.M_ALPHA, self.hp.M_BETA,
+                                        self.hp.M_BETA_INCRE, self.hp.M_ABS_ERROR_UPPER)
         self.memory = Memory(capacity=self.memory_size, para=self.memory_paras)
 
-        self.sess = tf.Session()
+        # start a session
+        self.sess = tf.Session(config=tf.ConfigProto(
+            device_count={"CPU": 12},
+            inter_op_parallelism_threads=1,
+            intra_op_parallelism_threads=1
+        ))
         self.sess.run(tf.global_variables_initializer())
 
-        if output_graph:
+        if self.summary_flag:
             tf.summary.FileWriter("logs/", self.sess.graph)
 
         self.cost_his = []
 
-    def store_transition(self, s, a, r, s_):
-        transition = np.hstack((s.flatten(), a, [r], s_.flatten()))
+    def store_transition(self, transition):
+        # transition = np.hstack((s.flatten(), a, [r], s_.flatten()))
         self.memory.store(transition)  # have high priority for newly arrived transition
 
-    def choose_action(self, observation, step):
-        observation = observation[np.newaxis, :]
-        if step >= self.replay_start and np.random.uniform() < self.epsilon:
+    def choose_action(self, observation):
+        if np.random.uniform() < self.epsilon:
+            # forward feed the observation and get q value for every actions
             actions_value = self.sess.run(self.q_eval_net_out, feed_dict={self.eval_net_input: observation})
+            actions_value = actions_value / np.max(actions_value)
             for i in range(actions_value.size):
                 if actions_value[0][i] < 0.5:
                     actions_value[0][i] = 0
@@ -224,26 +208,33 @@ class DeepQNetwork:
         return action
 
     def learn(self):
+        # check to replace target parameters
         if self.learn_step_counter % self.replace_target_iter == 0:
             self.sess.run(self.target_replace_op)
             print('\ntarget_params_replaced\n')
 
         tree_idx, batch_memory, ISWeights = self.memory.sample(self.batch_size)
 
+        length = self.hp.IMAGE_LENGTH * self.hp.IMAGE_LENGTH * self.hp.AGENT_HISTORY_LENGTH
+        s_batch = batch_memory[:, :length]
+        eval_act_index_batch = batch_memory[:, length:length + self.n_actions].astype(int)
+        reward_batch = batch_memory[:, length + self.n_actions].astype(int)
+        s_next_batch = batch_memory[:, -length:]
+
+        s_batch_input = np.reshape(s_batch, (self.hp.MINIBATCH_SIZE, self.hp.IMAGE_LENGTH,
+                                             self.hp.IMAGE_LENGTH, self.hp.AGENT_HISTORY_LENGTH))
+        s_next_batch_input = np.reshape(s_next_batch, (self.hp.MINIBATCH_SIZE, self.hp.IMAGE_LENGTH,
+                                                       self.hp.IMAGE_LENGTH, self.hp.AGENT_HISTORY_LENGTH))
+
         q_next, q_eval = self.sess.run(
             [self.q_target_net_out, self.q_eval_net_out],
-            feed_dict={self.target_net_input: batch_memory[:, -self.n_features:],
-                       self.eval_net_input: batch_memory[:, :self.n_features]})
+            feed_dict={self.target_net_input: s_next_batch_input,
+                       self.eval_net_input: s_batch_input})
 
-        q_target = q_eval.copy()
-        batch_index = np.arange(self.batch_size, dtype=np.int32)
-        eval_act_index = batch_memory[:, self.n_features].astype(int)
-        reward = batch_memory[:, self.n_features + 1]
-
-        q_target[batch_index, eval_act_index] = reward + self.gamma * np.max(q_next, axis=1)
+        q_target = eval_act_index_batch * (np.expand_dims(reward_batch, 1) + self.gamma * q_next)
 
         _, abs_errors, self.cost = self.sess.run([self.train_op, self.abs_errors, self.loss],
-                                                 feed_dict={self.eval_net_input: batch_memory[:, :self.n_features],
+                                                 feed_dict={self.eval_net_input: s_batch_input,
                                                             self.q_target: q_target,
                                                             self.ISWeights: ISWeights})
         self.memory.batch_update(tree_idx, abs_errors)  # update priority

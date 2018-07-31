@@ -10,10 +10,7 @@ from Hyper_parameters.hp_dqn_2015 import Hyperparameters
 
 
 class DeepQNetwork:
-    def __init__(
-            self,
-            network_build
-    ):
+    def __init__(self, network_build):
         self.hp = Hyperparameters()
         self.n_actions = self.hp.N_ACTIONS
         self.n_features = self.hp.N_FEATURES
@@ -69,7 +66,6 @@ class DeepQNetwork:
         :param step:
         :return:
         """
-        # at the very beginning, only take actions randomly.
         if np.random.uniform() < self.epsilon:
             # forward feed the observation and get q value for every actions
             actions_value = self.sess.run(self.q_eval_net_out, feed_dict={self.eval_net_input: observation})
