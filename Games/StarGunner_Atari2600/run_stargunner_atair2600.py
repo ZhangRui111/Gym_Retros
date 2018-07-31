@@ -152,6 +152,16 @@ def main(model):
         built_net = build_network(rand)
         # get the DeepQNetwork Agent
         RL = DeepQNetwork(built_net)
+    elif model == "dueling_dqn":
+        from Brain.dueling_dqn import DeepQNetwork
+        from Games.StarGunner_Atari2600.network_dueling_dqn import build_network
+        rand = np.random.randint(1000)
+        while rand in rand_list:
+            rand = np.random.randint(1000)
+        rand_list.append(rand)
+        built_net = build_network(rand)
+        # get the DeepQNetwork Agent
+        RL = DeepQNetwork(built_net)
     else:
         from Brain.dqn_2015 import DeepQNetwork
         from Games.StarGunner_Atari2600.network_dqn_2015 import build_network
