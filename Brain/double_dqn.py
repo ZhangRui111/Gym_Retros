@@ -4,25 +4,11 @@ import tensorflow as tf
 from collections import deque
 
 from Hyper_parameters.hp_double_dqn import Hyperparameters
-
-
-def binary_array_to_int(array, size):
-    out_list = []
-    for i in range(size):
-        input = array[i]
-        out = 0
-        for bit in input:
-            out = (out << 1) | bit
-        out_list.append(out)
-    out_arr = np.array(out_list).reshape((size, 1))
-    return out_arr
+from Utils.dtype_convert import binary_array_to_int
 
 
 class DeepQNetwork:
-    def __init__(
-            self,
-            network_build
-    ):
+    def __init__(self, network_build):
         self.hp = Hyperparameters()
         self.n_actions = self.hp.N_ACTIONS
         self.n_features = self.hp.N_FEATURES
@@ -75,11 +61,10 @@ class DeepQNetwork:
         """ Choose action following epsilon-greedy policy.
 
         :param observation:
-        :param step:
         :return:
         """
         # at the very beginning, only take actions randomly.
-        if np.random.uniform() < 1:
+        if np.random.uniform() < self.epsilon:
             # forward feed the observation and get q value for every actions
             actions_value = self.sess.run(self.q_eval_net_out, feed_dict={self.eval_net_input: observation})
             action_index = np.argmax(actions_value)

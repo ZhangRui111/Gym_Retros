@@ -18,7 +18,8 @@ def build_network(rand):
     eval_net_input = tf.placeholder(tf.float32, [None, hp.IMAGE_LENGTH, hp.IMAGE_LENGTH, hp.AGENT_HISTORY_LENGTH],
                                     name='eval_net_input_' + str(rand))
     # q_target for loss
-    q_target = tf.placeholder(tf.float32, [None, hp.N_ACTIONS], name='q_target_' + str(rand))
+    # q_target = tf.placeholder(tf.float32, [None, hp.N_ACTIONS], name='q_target_' + str(rand))
+    q_target = tf.placeholder(tf.float32, [None, 2 ** hp.N_ACTIONS], name='q_target_' + str(rand))
     # initializer
     w_initializer, b_initializer = tf.random_normal_initializer(0., 0.01), tf.constant_initializer(0)
 
@@ -49,7 +50,9 @@ def build_network(rand):
                              bias_initializer=b_initializer, name='eval_f1' + str(rand))
         # f2 = tf.layers.dense(f1, 128, tf.nn.relu, kernel_initializer=w_initializer,
         #                      bias_initializer=b_initializer, name='f2' + str(rand))
-        q_eval_net_out = tf.layers.dense(f1, hp.N_ACTIONS, kernel_initializer=w_initializer,
+        # q_eval_net_out = tf.layers.dense(f1, hp.N_ACTIONS, kernel_initializer=w_initializer,
+        #                                  bias_initializer=b_initializer, name='q_e_' + str(rand))
+        q_eval_net_out = tf.layers.dense(f1, 2 ** hp.N_ACTIONS, kernel_initializer=w_initializer,
                                          bias_initializer=b_initializer, name='q_e_' + str(rand))
 
     with tf.variable_scope('loss'):

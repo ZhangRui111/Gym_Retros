@@ -216,4 +216,4 @@ if __name__ == '__main__':
     hp = Hyperparameters()
     # # change different models here:
     # pri_dqn, double_dqn...
-    result1 = main(model='double_dqn')
+    result1 = main(model='dqn_2013')
