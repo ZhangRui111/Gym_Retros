@@ -6,6 +6,18 @@ from collections import deque
 from Hyper_parameters.hp_double_dqn import Hyperparameters
 
 
+def binary_array_to_int(array, size):
+    out_list = []
+    for i in range(size):
+        input = array[i]
+        out = 0
+        for bit in input:
+            out = (out << 1) | bit
+        out_list.append(out)
+    out_arr = np.array(out_list).reshape((size, 1))
+    return out_arr
+
+
 class DeepQNetwork:
     def __init__(
             self,
@@ -21,7 +33,7 @@ class DeepQNetwork:
         self.replace_target_iter = self.hp.TARGET_NETWORK_UPDATE_FREQUENCY
         self.memory_size = self.hp.REPLY_MEMORY_SIZE
         self.batch_size = self.hp.MINIBATCH_SIZE
-        self.epsilon_increment = (self.hp.FINAL_EXPLOR-self.hp.INITIAL_EXPLOR) / self.hp.FINAL_EXPLOR_FRAME
+        self.epsilon_increment = (self.hp.FINAL_EXPLOR - self.hp.INITIAL_EXPLOR) / self.hp.FINAL_EXPLOR_FRAME
         self.epsilon = self.hp.INITIAL_EXPLOR
         self.flag = True  # output signal
         self.summary_flag = self.hp.OUTPUT_GRAPH  # tf.summary flag
@@ -67,16 +79,13 @@ class DeepQNetwork:
         :return:
         """
         # at the very beginning, only take actions randomly.
-        if np.random.uniform() < self.epsilon:
+        if np.random.uniform() < 1:
             # forward feed the observation and get q value for every actions
             actions_value = self.sess.run(self.q_eval_net_out, feed_dict={self.eval_net_input: observation})
-            actions_value = actions_value / np.max(actions_value)
-            for i in range(actions_value.size):
-                if actions_value[0][i] < 0.5:
-                    actions_value[0][i] = 0
-                else:
-                    actions_value[0][i] = 1
-            action = actions_value[0]
+            action_index = np.argmax(actions_value)
+            a = []
+            [a.append(int(x)) for x in bin(action_index)[2:]]
+            action = np.array(a)
         else:
             action = np.random.randint(2, size=8)
         return action
@@ -88,13 +97,10 @@ class DeepQNetwork:
         :return:
         """
         actions_value = self.sess.run(self.q_eval_net_out, feed_dict={self.eval_net_input: observation})
-        actions_value = actions_value / np.max(actions_value)
-        for i in range(actions_value.size):
-            if actions_value[0][i] < 0.5:
-                actions_value[0][i] = 0
-            else:
-                actions_value[0][i] = 1
-        action = actions_value[0]
+        action_index = np.argmax(actions_value)
+        a = []
+        [a.append(int(x)) for x in bin(action_index)[2:]]
+        action = np.array(a)
         return action
 
     def learn(self):
@@ -105,16 +111,18 @@ class DeepQNetwork:
 
         # sample batch memory from all memory
         batch_memory = random.sample(self.memory, self.batch_size)
-        length = self.hp.IMAGE_LENGTH*self.hp.IMAGE_LENGTH*self.hp.AGENT_HISTORY_LENGTH
-        batch_memory_arr = np.zeros((self.batch_size, length*2+1+self.n_actions))
+        length = self.hp.IMAGE_LENGTH * self.hp.IMAGE_LENGTH * self.hp.AGENT_HISTORY_LENGTH
+        batch_memory_arr = np.zeros((self.batch_size, length * 2 + 1 + self.n_actions))
         i = 0
         for d in batch_memory:
             batch_memory_arr[i, :] = d
             i += 1
 
         s_batch = batch_memory_arr[:, :length]
-        eval_act_index_batch = batch_memory_arr[:, length:length+self.n_actions].astype(int)
-        reward_batch = batch_memory_arr[:, length+self.n_actions].astype(int)
+        eval_act_index_batch = batch_memory_arr[:, length:length + self.n_actions].astype(int)
+        # convert the binary array to an int.
+        eval_act_index_batch = binary_array_to_int(eval_act_index_batch, self.batch_size)
+        reward_batch = batch_memory_arr[:, length + self.n_actions].astype(int)
         s_next_batch = batch_memory_arr[:, -length:]
 
         s_batch_input = np.reshape(s_batch, (self.hp.MINIBATCH_SIZE, self.hp.IMAGE_LENGTH,
@@ -122,17 +130,26 @@ class DeepQNetwork:
         s_next_batch_input = np.reshape(s_next_batch, (self.hp.MINIBATCH_SIZE, self.hp.IMAGE_LENGTH,
                                                        self.hp.IMAGE_LENGTH, self.hp.AGENT_HISTORY_LENGTH))
 
-        # input is all next observation
-        q_target_out = self.sess.run(self.q_target_net_out,
-                                     feed_dict={self.target_net_input: s_next_batch_input})
-
+        q_target_select_a, q_target_out = \
+            self.sess.run([self.q_eval_net_out, self.q_target_net_out],
+                          feed_dict={self.eval_net_input: s_next_batch_input,
+                                     self.target_net_input: s_next_batch_input})
         # real q_eval, input is the current observation
         q_eval = self.sess.run(self.q_eval_net_out,
                                {self.eval_net_input: s_batch_input})
         if self.summary_flag:
             tf.summary.histogram("q_eval", q_eval)
 
-        q_target = eval_act_index_batch*(np.expand_dims(reward_batch, 1) + self.gamma * q_target_out)
+        q_target = q_eval.copy()
+
+        batch_index = np.arange(self.batch_size, dtype=np.int32)
+
+        # # Double DQN
+        max_act4next = np.argmax(q_target_select_a, axis=1)
+        selected_q_next = q_target_out[batch_index, max_act4next]
+
+        # real q_target
+        q_target[batch_index, eval_act_index_batch] = reward_batch + self.gamma * selected_q_next
 
         if self.summary_flag:
             tf.summary.histogram("q_target", q_target)
