@@ -134,9 +134,9 @@ def main(model):
     env = env.unwrapped
     rand_list = []
 
-    if model == 'dqn_2015':
-        from Brain.dqn_2015 import DeepQNetwork
-        from Games.StarGunner_Atari2600.network_dqn_2015 import build_network
+    if model == 'dqn_2013':
+        from Brain.dqn_2013 import DeepQNetwork
+        from Games.StarGunner_Atari2600.network_dqn_2013 import build_network
         rand = np.random.randint(1000)
         while rand in rand_list:
             rand = np.random.randint(1000)
@@ -144,9 +144,9 @@ def main(model):
         built_net = build_network(rand)
         # get the DeepQNetwork Agent
         RL = DeepQNetwork(built_net)
-    elif model == "dqn_2013":
-        from Brain.dqn_2013 import DeepQNetwork
-        from Games.StarGunner_Atari2600.network_dqn_2013 import build_network
+    elif model == "dqn_2015":
+        from Brain.dqn_2015 import DeepQNetwork
+        from Games.StarGunner_Atari2600.network_dqn_2015 import build_network
         rand = np.random.randint(1000)
         while rand in rand_list:
             rand = np.random.randint(1000)
@@ -216,4 +216,4 @@ if __name__ == '__main__':
     hp = Hyperparameters()
     # # change different models here:
     # pri_dqn, double_dqn...
-    result1 = main(model='dqn_2013')
+    result1 = main(model='dueling_dqn')

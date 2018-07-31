@@ -22,7 +22,8 @@ def build_network(rand):
     target_net_input = tf.placeholder(tf.float32, [None, hp.IMAGE_LENGTH, hp.IMAGE_LENGTH, hp.AGENT_HISTORY_LENGTH],
                                       name='target_net_input_' + str(rand))
     # q_target for loss
-    q_target = tf.placeholder(tf.float32, [None, hp.N_ACTIONS], name='q_target_' + str(rand))
+    # q_target = tf.placeholder(tf.float32, [None, hp.N_ACTIONS], name='q_target_' + str(rand))
+    q_target = tf.placeholder(tf.float32, [None, 2 ** hp.N_ACTIONS], name='q_target_' + str(rand))
     # initializer
     w_initializer, b_initializer = tf.random_normal_initializer(0., 0.01), tf.constant_initializer(0)
 
@@ -55,7 +56,9 @@ def build_network(rand):
         #                      bias_initializer=b_initializer, name='f2' + str(rand))
         eval_V = tf.layers.dense(f1, 1, None, kernel_initializer=w_initializer,
                                  bias_initializer=b_initializer, name='eval_V')
-        eval_A = tf.layers.dense(f1, hp.N_ACTIONS, None, kernel_initializer=w_initializer,
+        # eval_A = tf.layers.dense(f1, hp.N_ACTIONS, None, kernel_initializer=w_initializer,
+        #                          bias_initializer=b_initializer, name='eval_A')
+        eval_A = tf.layers.dense(f1, 2 ** hp.N_ACTIONS, None, kernel_initializer=w_initializer,
                                  bias_initializer=b_initializer, name='eval_A')
         q_eval_net_out = eval_V + (eval_A - tf.reduce_mean(eval_A, axis=1, keep_dims=True))
 
@@ -94,7 +97,9 @@ def build_network(rand):
         #                      bias_initializer=b_initializer, name='f2' + str(rand))
         target_V = tf.layers.dense(f1, 1, None, kernel_initializer=w_initializer,
                                    bias_initializer=b_initializer, name='target_V')
-        target_A = tf.layers.dense(f1, hp.N_ACTIONS, None, kernel_initializer=w_initializer,
+        # target_A = tf.layers.dense(f1, hp.N_ACTIONS, None, kernel_initializer=w_initializer,
+        #                            bias_initializer=b_initializer, name='target_A')
+        target_A = tf.layers.dense(f1, 2 ** hp.N_ACTIONS, None, kernel_initializer=w_initializer,
                                    bias_initializer=b_initializer, name='target_A')
         q_target_net_out = target_V + (target_A - tf.reduce_mean(target_A, axis=1, keep_dims=True))
 
