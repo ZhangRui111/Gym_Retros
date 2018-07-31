@@ -24,6 +24,6 @@ class Hyperparameters(object):
         self.MAX_EPISODES = 100000
         self.WEIGHTS_SAVER_ITER = 20000
         self.OUTPUT_SAVER_ITER = 10000
-        self.OUTPUT_GRAPH = True
+        self.OUTPUT_GRAPH = False
         self.SAVED_NETWORK_PATH = './saved_network/'
         self.LOGS_DATA_PATH = './logs/'
