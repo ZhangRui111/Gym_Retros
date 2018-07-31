@@ -33,12 +33,14 @@ def restore_parameters(sess, model):
 def preprocessing(obser):
     x_t = cv2.cvtColor(cv2.resize(obser, (hp.IMAGE_LENGTH, hp.IMAGE_LENGTH)), cv2.COLOR_BGR2GRAY)
     ret, x_t = cv2.threshold(x_t, 1, 255, cv2.THRESH_BINARY)
+    x_t = x_t/255  # [0, 1]
     return x_t  # (96, 96)
 
 
 def preprocessing_stack(obser):
     x_t = cv2.cvtColor(cv2.resize(obser, (hp.IMAGE_LENGTH, hp.IMAGE_LENGTH)), cv2.COLOR_BGR2GRAY)
     ret, x_t = cv2.threshold(x_t, 1, 255, cv2.THRESH_BINARY)
+    x_t = x_t / 255  # [0, 1]
     obser_stack = np.stack(([x_t]*hp.AGENT_HISTORY_LENGTH), axis=2)
     return obser_stack  # (4, 96, 96)
 
@@ -59,13 +61,13 @@ def run_stargunner(env, RL, model, saver, load_step):
         observation = env.reset()
         obser_pool.append(observation)
         obser_cv_stack = preprocessing_stack(observation)
-        action = RL.choose_action(obser_cv_stack)
+        action = RL.choose_action(np.expand_dims(obser_cv_stack, axis=0))
 
         while True:
             env.render()
             if total_steps % hp.AGENT_HISTORY_LENGTH == 0:
                 # RL choose action based on observation
-                action = RL.choose_action(preprocessing_stack(observation))
+                action = RL.choose_action(np.expand_dims(preprocessing_stack(observation), axis=0))
                 # RL take action and get next observation and reward
             else:
                 pass
@@ -140,6 +142,16 @@ def main(model):
         built_net = build_network(rand)
         # get the DeepQNetwork Agent
         RL = DeepQNetwork(built_net)
+    elif model == "dqn_2013":
+        from Brain.dqn_2013 import DeepQNetwork
+        from Games.StarGunner_Atari2600.network_dqn_2013 import build_network
+        rand = np.random.randint(1000)
+        while rand in rand_list:
+            rand = np.random.randint(1000)
+        rand_list.append(rand)
+        built_net = build_network(rand)
+        # get the DeepQNetwork Agent
+        RL = DeepQNetwork(built_net)
     else:
         from Brain.dqn_2015 import DeepQNetwork
         from Games.StarGunner_Atari2600.network_dqn_2015 import build_network
@@ -171,4 +183,4 @@ if __name__ == '__main__':
     hp = Hyperparameters()
     # # change different models here:
     # pri_dqn, double_dqn...
-    result1 = main(model='dqn_2015')
+    result1 = main(model='dqn_2013')

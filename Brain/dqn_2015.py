@@ -43,14 +43,15 @@ class DeepQNetwork:
         # initialize zero memory [s, a, r, s_]
         self.memory = deque()
 
-        # consist of [target_net, evaluate_net]
-        # build_network()
-
         with tf.variable_scope('soft_replacement'):
             self.target_replace_op = [tf.assign(t, e) for t, e in zip(self.t_params, self.e_params)]
 
         # start a session
-        self.sess = tf.Session()
+        self.sess = tf.Session(config=tf.ConfigProto(
+            device_count={"CPU": 12},
+            inter_op_parallelism_threads=1,
+            intra_op_parallelism_threads=1
+        ))
 
         if self.summary_flag:
             self.writer = tf.summary.FileWriter("./logs/", self.sess.graph)
@@ -69,6 +70,7 @@ class DeepQNetwork:
         if np.random.uniform() < self.epsilon:
             # forward feed the observation and get q value for every actions
             actions_value = self.sess.run(self.q_eval_net_out, feed_dict={self.eval_net_input: observation})
+            actions_value = actions_value / np.max(actions_value)
             for i in range(actions_value.size):
                 if actions_value[0][i] < 0.5:
                     actions_value[0][i] = 0
@@ -86,6 +88,7 @@ class DeepQNetwork:
         :return:
         """
         actions_value = self.sess.run(self.q_eval_net_out, feed_dict={self.eval_net_input: observation})
+        actions_value = actions_value / np.max(actions_value)
         for i in range(actions_value.size):
             if actions_value[0][i] < 0.5:
                 actions_value[0][i] = 0
@@ -129,7 +132,7 @@ class DeepQNetwork:
         if self.summary_flag:
             tf.summary.histogram("q_eval", q_eval)
 
-        q_target = np.expand_dims(reward_batch, 1) + self.gamma * q_target_out
+        q_target = eval_act_index_batch*(np.expand_dims(reward_batch, 1) + self.gamma * q_target_out)
 
         if self.summary_flag:
             tf.summary.histogram("q_target", q_target)
