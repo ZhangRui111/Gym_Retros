@@ -1,3 +1,6 @@
+"""
+This is not real dqn_2015 as this algorithm only output Q value for one set of actions.
+"""
 import numpy as np
 import random
 import tensorflow as tf
