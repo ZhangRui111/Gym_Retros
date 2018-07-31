@@ -137,67 +137,31 @@ def main(model):
     if model == 'dqn_2013':
         from Brain.dqn_2013 import DeepQNetwork
         from Games.StarGunner_Atari2600.network_dqn_2013 import build_network
-        rand = np.random.randint(1000)
-        while rand in rand_list:
-            rand = np.random.randint(1000)
-        rand_list.append(rand)
-        built_net = build_network(rand)
-        # get the DeepQNetwork Agent
-        RL = DeepQNetwork(built_net)
     elif model == "dqn_2015":
         from Brain.dqn_2015 import DeepQNetwork
         from Games.StarGunner_Atari2600.network_dqn_2015 import build_network
-        rand = np.random.randint(1000)
-        while rand in rand_list:
-            rand = np.random.randint(1000)
-        rand_list.append(rand)
-        built_net = build_network(rand)
-        # get the DeepQNetwork Agent
-        RL = DeepQNetwork(built_net)
     elif model == "double_dqn":
         from Brain.double_dqn import DeepQNetwork
         from Games.StarGunner_Atari2600.network_double_dqn import build_network
-        rand = np.random.randint(1000)
-        while rand in rand_list:
-            rand = np.random.randint(1000)
-        rand_list.append(rand)
-        built_net = build_network(rand)
-        # get the DeepQNetwork Agent
-        RL = DeepQNetwork(built_net)
     elif model == "dueling_dqn":
         from Brain.dueling_dqn import DeepQNetwork
         from Games.StarGunner_Atari2600.network_dueling_dqn import build_network
-        rand = np.random.randint(1000)
-        while rand in rand_list:
-            rand = np.random.randint(1000)
-        rand_list.append(rand)
-        built_net = build_network(rand)
-        # get the DeepQNetwork Agent
-        RL = DeepQNetwork(built_net)
     elif model == "pri_dqn":
         from Brain.pri_dqn import DeepQNetwork
         from Games.StarGunner_Atari2600.network_pri_dqn import build_network
-        rand = np.random.randint(1000)
-        while rand in rand_list:
-            rand = np.random.randint(1000)
-        rand_list.append(rand)
-        built_net = build_network(rand)
-        # get the DeepQNetwork Agent
-        RL = DeepQNetwork(built_net)
     else:
         print("Warning: invalid code for algorithm! Running dqn_2015 instead!")
         from Brain.dqn_2015 import DeepQNetwork
         from Games.StarGunner_Atari2600.network_dqn_2015 import build_network
+
+    rand = np.random.randint(1000)
+    while rand in rand_list:
         rand = np.random.randint(1000)
-        while rand in rand_list:
-            rand = np.random.randint(1000)
-        rand_list.append(rand)
-        built_net = build_network(rand)
-        # get the DeepQNetwork Agent
-        RL = DeepQNetwork(built_net)
+    rand_list.append(rand)
+    built_net = build_network(rand)
+    RL = DeepQNetwork(built_net)
 
     saver, load_step = restore_parameters(RL.sess, model)
-
     # Calculate running time
     start_time = time.time()
 
@@ -216,4 +180,4 @@ if __name__ == '__main__':
     hp = Hyperparameters()
     # # change different models here:
     # pri_dqn, double_dqn...
-    result1 = main(model='dueling_dqn')
+    result1 = main(model='pri_dqn')
