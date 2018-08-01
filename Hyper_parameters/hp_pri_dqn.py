@@ -1,5 +1,5 @@
 """
-This is all hyper-parameters needed in DQN-2015 Algorithm,
+This is all hyper-parameters needed in Pri DQN Algorithm,
 you can modify them here.
 """
 

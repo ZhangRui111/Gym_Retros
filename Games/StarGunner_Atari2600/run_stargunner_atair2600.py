@@ -143,60 +143,102 @@ def main(model):
     env = env.unwrapped
     rand_list = []
 
-    if model == 'dqn_2013':
-        from Brain.dqn_2013 import DeepQNetwork
-        from Games.StarGunner_Atari2600.network_dqn_2013 import build_network
-        from Hyper_parameters.hp_dqn_2013 import Hyperparameters
-    elif model == "dqn_2015":
-        from Brain.dqn_2015 import DeepQNetwork
-        from Games.StarGunner_Atari2600.network_dqn_2015 import build_network
-        from Hyper_parameters.hp_dqn_2015 import Hyperparameters
-    elif model == "double_dqn":
-        from Brain.double_dqn import DeepQNetwork
-        from Games.StarGunner_Atari2600.network_double_dqn import build_network
-        from Hyper_parameters.hp_double_dqn import Hyperparameters
-    elif model == "dueling_dqn":
-        from Brain.dueling_dqn import DeepQNetwork
-        from Games.StarGunner_Atari2600.network_dueling_dqn import build_network
-        from Hyper_parameters.hp_dueling_dqn import Hyperparameters
-    elif model == "pri_dqn":
-        from Brain.pri_dqn import DeepQNetwork
-        from Games.StarGunner_Atari2600.network_pri_dqn import build_network
-        from Hyper_parameters.hp_pri_dqn import Hyperparameters
-    elif model == "sarsa":
-        from Brain.sarsa import DeepQNetwork
-        from Games.StarGunner_Atari2600.network_sarsa import build_network
-        from Hyper_parameters.hp_sarsa import Hyperparameters
+    if model == "a3c":
+        from Brain.a3c import ACNet, Worker, GLOBAL_RUNNING_R, Shared
+        from Games.StarGunner_Atari2600.network_a3c import build_network
+        from Hyper_parameters.hp_a3c import Hyperparameters
+        import threading
+        import shutil
+
+        hp = Hyperparameters()
+        SESS = tf.Session()
+        COORD = tf.train.Coordinator()
+
+        with tf.device("/cpu:0"):
+            OPT_A = tf.train.RMSPropOptimizer(hp.LR_A, name='RMSPropA')
+            OPT_C = tf.train.RMSPropOptimizer(hp.LR_C, name='RMSPropC')
+            shared = Shared(SESS, OPT_A, OPT_C, COORD)
+            GLOBAL_AC = ACNet(hp.GLOBAL_NET_SCOPE, shared)  # we only need its params
+            workers = []
+            # Create worker
+            for i in range(hp.N_WORKERS):
+                i_name = 'W_%i' % i  # worker name
+                workers.append(Worker(i_name, shared, GLOBAL_AC))
+
+        SESS.run(tf.global_variables_initializer())
+
+        if hp.OUTPUT_GRAPH:
+            if os.path.exists(hp.LOGS_DATA_PATH):
+                shutil.rmtree(hp.LOGS_DATA_PATH)
+            tf.summary.FileWriter(hp.LOGS_DATA_PATH, SESS.graph)
+
+        worker_threads = []
+        for worker in workers:
+            job = lambda: worker.work()
+            t = threading.Thread(target=job)
+            t.start()
+            worker_threads.append(t)
+        COORD.join(worker_threads)
+
+        plt.plot(np.arange(len(GLOBAL_RUNNING_R)), GLOBAL_RUNNING_R)
+        plt.xlabel('step')
+        plt.ylabel('Total moving reward')
+        plt.show()
     else:
-        print("Warning: invalid code for algorithm! Running dqn_2015 instead!")
-        from Brain.dqn_2015 import DeepQNetwork
-        from Games.StarGunner_Atari2600.network_dqn_2015 import build_network
-        from Hyper_parameters.hp_dqn_2015 import Hyperparameters
+        if model == 'dqn_2013':
+            from Brain.dqn_2013 import DeepQNetwork
+            from Games.StarGunner_Atari2600.network_dqn_2013 import build_network
+            from Hyper_parameters.hp_dqn_2013 import Hyperparameters
+        elif model == "dqn_2015":
+            from Brain.dqn_2015 import DeepQNetwork
+            from Games.StarGunner_Atari2600.network_dqn_2015 import build_network
+            from Hyper_parameters.hp_dqn_2015 import Hyperparameters
+        elif model == "double_dqn":
+            from Brain.double_dqn import DeepQNetwork
+            from Games.StarGunner_Atari2600.network_double_dqn import build_network
+            from Hyper_parameters.hp_double_dqn import Hyperparameters
+        elif model == "dueling_dqn":
+            from Brain.dueling_dqn import DeepQNetwork
+            from Games.StarGunner_Atari2600.network_dueling_dqn import build_network
+            from Hyper_parameters.hp_dueling_dqn import Hyperparameters
+        elif model == "pri_dqn":
+            from Brain.pri_dqn import DeepQNetwork
+            from Games.StarGunner_Atari2600.network_pri_dqn import build_network
+            from Hyper_parameters.hp_pri_dqn import Hyperparameters
+        elif model == "sarsa":
+            from Brain.sarsa import DeepQNetwork
+            from Games.StarGunner_Atari2600.network_sarsa import build_network
+            from Hyper_parameters.hp_sarsa import Hyperparameters
+        else:
+            print("Warning: invalid code for algorithm! Running dqn_2015 instead!")
+            from Brain.dqn_2015 import DeepQNetwork
+            from Games.StarGunner_Atari2600.network_dqn_2015 import build_network
+            from Hyper_parameters.hp_dqn_2015 import Hyperparameters
 
-    hp = Hyperparameters()
-    rand = np.random.randint(1000)
-    while rand in rand_list:
+        hp = Hyperparameters()
         rand = np.random.randint(1000)
-    rand_list.append(rand)
-    built_net = build_network(rand)
-    RL = DeepQNetwork(built_net)
+        while rand in rand_list:
+            rand = np.random.randint(1000)
+        rand_list.append(rand)
+        built_net = build_network(rand)
+        RL = DeepQNetwork(built_net)
 
-    saver, load_step = restore_parameters(RL.sess, model, hp)
-    # Calculate running time
-    start_time = time.time()
+        saver, load_step = restore_parameters(RL.sess, model, hp)
+        # Calculate running time
+        start_time = time.time()
 
-    results = run_stargunner(env, RL, model, saver, load_step, hp)
+        results = run_stargunner(env, RL, model, saver, load_step, hp)
 
-    end_time = time.time()
-    running_time = (end_time - start_time) / 60
+        end_time = time.time()
+        running_time = (end_time - start_time) / 60
 
-    filename = hp.LOGS_DATA_PATH + model + "/running_time.txt"
-    write_to_file_w(filename, str(running_time))
+        filename = hp.LOGS_DATA_PATH + model + "/running_time.txt"
+        write_to_file_w(filename, str(running_time))
 
-    return results
+        return results
 
 
 if __name__ == '__main__':
     # # change different models here:
     # pri_dqn, double_dqn...
-    result1 = main(model='sarsa')
+    result1 = main(model='a3c')
