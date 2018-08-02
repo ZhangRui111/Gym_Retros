@@ -7,9 +7,8 @@ you can modify them here.
 class Hyperparameters(object):
     def __init__(self):
         self.IMAGE_LENGTH = 96
-        self.AGENT_HISTORY_LENGTH = 4
         self.N_FEATURES = 4
-        self.N_ACTIONS = 2
+        self.N_ACTIONS = 8
 
         self.GAME = 'CartPole-v0'
         self.N_WORKERS = 4  # or we can get the number of available CPUs by multiprocessing.cpu_count()

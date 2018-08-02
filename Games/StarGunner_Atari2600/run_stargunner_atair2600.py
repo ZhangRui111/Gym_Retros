@@ -34,7 +34,7 @@ def preprocessing(obser, hp):
     ret, x_t = cv2.threshold(x_t, 1, 255, cv2.THRESH_BINARY)
     x_t = x_t/255  # [0, 1]
     x_t = np.expand_dims(x_t, 2)
-    return x_t  # (96, 96)
+    return x_t  # (96, 96, 1)
 
 
 def preprocessing_stack(obser, hp):
@@ -163,7 +163,7 @@ def main(model):
             # Create worker
             for i in range(hp.N_WORKERS):
                 i_name = 'W_%i' % i  # worker name
-                workers.append(Worker(i_name, shared, GLOBAL_AC))
+                workers.append(Worker(i_name, shared, GLOBAL_AC, env))
 
         SESS.run(tf.global_variables_initializer())
 
@@ -241,4 +241,5 @@ def main(model):
 if __name__ == '__main__':
     # # change different models here:
     # pri_dqn, double_dqn...
+    # result1 = main(model='dqn_2015')
     result1 = main(model='a3c')
